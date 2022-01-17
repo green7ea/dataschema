@@ -1,0 +1,218 @@
+definitions:
+  ds_DefinitionBunch:
+    type: map
+    key:
+      type: string
+    value:
+      type: ref
+      to: ds_Definition
+
+  ds_Definition:
+    type: object
+    properties:
+      imports:
+        type: map
+        key:
+          type: string
+        value:
+          type: array
+          items:
+            type: string
+
+      definitions:
+        type: map
+        key:
+          type: string
+        value:
+          type: ref
+          to: ds_Schema
+
+  ds_Schema:
+    type: oneOf
+    these:
+      string:
+        type: ref
+        to: ds_String
+      number:
+        type: ref
+        to: ds_Number
+      integer:
+        type: ref
+        to: ds_Integer
+      boolean:
+        type: ref
+        to: ds_Boolean
+      map:
+        type: ref
+        to: ds_Map
+      array:
+        type: ref
+        to: ds_Array
+      object:
+        type: ref
+        to: ds_Object
+      enum:
+        type: ref
+        to: ds_Enum
+      oneOf:
+        type: ref
+        to: ds_OneOf
+      oneOfType:
+        type: ref
+        to: ds_OneOfType
+      ref:
+        type: ref
+        to: ds_Ref
+
+  ds_Base:
+    type: object
+    properties:
+      title:
+        type: string
+      format:
+        type: string
+      description:
+        type: string
+
+  ds_String:
+    type: object
+    extends:
+      - ds_Base
+    properties:
+      validation:
+        type: object
+        properties:
+          minLength:
+            type: number
+          maxLength:
+            type: number
+
+  ds_Number:
+    type: object
+    extends:
+      - ds_Base
+    properties:
+      bits:
+        type: integer
+        validation:
+          values: [32, 64]
+      validation:
+        type: object
+        properties:
+          min:
+            type: number
+          max:
+            type: number
+
+  ds_Integer:
+    type: object
+    extends:
+      - ds_Base
+    properties:
+      bits:
+        type: integer
+        values: [8, 16, 32, 64]
+      validation:
+        type: object
+        properties:
+          min:
+            type: number
+          max:
+            type: number
+
+  ds_Boolean:
+    type: object
+    extends:
+      - ds_Base
+    properties: {}
+
+  ds_Map:
+    type: object
+    extends:
+      - ds_Base
+    properties:
+      key:
+        type: ref
+        to: ds_Schema
+      value:
+        type: ref
+        to: ds_Schema
+    required:
+      - key
+      - value
+
+  ds_Array:
+    type: object
+    extends:
+      - ds_Base
+    properties:
+      items:
+        type: ref
+        to: ds_Schema
+    required:
+      - items
+
+  ds_Object:
+    type: object
+    extends:
+      - ds_Base
+    properties:
+      properties:
+        type: map
+        key:
+          type: string
+        value:
+          type: ref
+          to: ds_Schema
+      required:
+        type: array
+        items:
+          type: string
+      extends:
+        type: array
+        items:
+          type: string
+    required:
+      - properties
+
+  ds_Enum:
+    type: object
+    properties:
+      of:
+        type: array
+        items:
+          type: string
+
+  ds_OneOf:
+    type: object
+    properties:
+      these:
+        type: map
+        key:
+          type: string
+        value:
+          type: ref
+          to: ds_Schema
+      tag:
+        type: string
+    required:
+      - these
+
+  ds_OneOfType:
+    type: object
+    properties:
+      these:
+        type: array
+        items:
+          type: ref
+          to: ds_Schema
+    required:
+      - these
+
+  ds_Ref:
+    type: object
+    properties:
+      to:
+        type: string
+    required:
+      - to

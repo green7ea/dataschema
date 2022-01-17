@@ -1,0 +1,31 @@
+{
+  "name": "@dataschema/core",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "author": "Emmanuel Boudreault <emmanuel.boudreault@polymtl.ca>",
+  "license": "BSD-3-Clause",
+  "type": "commonjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "build": "tsc",
+    "lint": "prettier -c src/",
+    "fix": "prettier -w src/",
+    "test": "ts-node node_modules/tape/bin/tape */**test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.6",
+    "@types/tape": "^4.13.2",
+    "tape": "^5.3.2",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "@types/js-yaml": "^4.0.4",
+    "@types/lodash": "^4.14.176",
+    "@types/prettier": "^2.4.3",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "prettier": "^2.4.1"
+  }
+}

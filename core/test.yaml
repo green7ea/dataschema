@@ -1,0 +1,57 @@
+imports:
+
+  person.yaml:
+    - Person
+
+
+definitions:
+
+  RealPlace:
+    type: object
+    properties:
+      building:
+        type: string
+      room:
+        type: string
+    required:
+      - building
+      - room
+
+  VirtualPlace:
+    type: object
+    properties:
+      url:
+        type: string
+    required:
+      - url
+
+  Contact:
+    type: object
+    extends:
+      - Person
+    properties:
+      email:
+        type: string
+    required:
+      - email
+
+  Meeting:
+    type: object
+    properties:
+      place:
+        type: oneOf
+        these:
+          real:
+            type: ref
+            to: RealPlace
+          virtual:
+            type: ref
+            to: VirtualPlace
+      participants:
+        type: array
+        items:
+          type: ref
+          to: Contact
+    required:
+      - place
+      - participants
