@@ -1,218 +1,187 @@
 definitions:
   ds_DefinitionBunch:
-    type: map
-    key:
-      type: string
-    value:
-      type: ref
-      to: ds_Definition
+    - map
+    - key: [string]
+      value:
+        - ref
+        - to: ds_Definition
 
   ds_Definition:
-    type: object
-    properties:
-      imports:
-        type: map
-        key:
-          type: string
-        value:
-          type: array
-          items:
-            type: string
+    - object
+    - properties:
+        imports:
+          - map
+          - key: [string]
+            value:
+              - array
+              - items:
+                  - string
 
-      definitions:
-        type: map
-        key:
-          type: string
-        value:
-          type: ref
-          to: ds_Schema
+        definitions:
+          - map
+          - key: [string]
+            value:
+              - ref
+              - to: ds_Schema
 
   ds_Schema:
-    type: oneOf
-    these:
-      string:
-        type: ref
-        to: ds_String
-      number:
-        type: ref
-        to: ds_Number
-      integer:
-        type: ref
-        to: ds_Integer
-      boolean:
-        type: ref
-        to: ds_Boolean
-      map:
-        type: ref
-        to: ds_Map
-      array:
-        type: ref
-        to: ds_Array
-      object:
-        type: ref
-        to: ds_Object
-      enum:
-        type: ref
-        to: ds_Enum
-      oneOf:
-        type: ref
-        to: ds_OneOf
-      oneOfType:
-        type: ref
-        to: ds_OneOfType
-      ref:
-        type: ref
-        to: ds_Ref
+    - oneOf
+    - these:
+        string:
+          - ref
+          - to: ds_String
+        number:
+          - ref
+          - to: ds_Number
+        integer:
+          - ref
+          - to: ds_Integer
+        boolean:
+          - ref
+          - to: ds_Boolean
+        map:
+          - ref
+          - to: ds_Map
+        array:
+          - ref
+          - to: ds_Array
+        tuple:
+          - ref
+          - to: ds_Tuple
+        object:
+          - ref
+          - to: ds_Object
+        enum:
+          - ref
+          - to: ds_Enum
+        oneOf:
+          - ref
+          - to: ds_OneOf
+        ref:
+          - ref
+          - to: ds_Ref
 
   ds_Base:
-    type: object
-    properties:
-      title:
-        type: string
-      format:
-        type: string
-      description:
-        type: string
+    - object
+    - properties:
+        title: [string]
+        format: [string]
+        description: [string]
 
   ds_String:
-    type: object
-    extends:
-      - ds_Base
-    properties:
-      validation:
-        type: object
-        properties:
-          minLength:
-            type: number
-          maxLength:
-            type: number
+    - object
+    - extends: [ds_Base]
+      properties:
+        validation:
+          - object
+          - properties:
+              minLength: [number]
+              maxLength: [number]
 
   ds_Number:
-    type: object
-    extends:
-      - ds_Base
-    properties:
-      bits:
-        type: integer
+    - object
+    - extends: [ds_Base]
+      properties:
+        bits:
+          - integer
+          - validation:
+              values: [32, 64]
         validation:
-          values: [32, 64]
-      validation:
-        type: object
-        properties:
-          min:
-            type: number
-          max:
-            type: number
+          - object
+          - properties:
+              min: [number]
+              max: [number]
 
   ds_Integer:
-    type: object
-    extends:
-      - ds_Base
-    properties:
-      bits:
-        type: integer
-        values: [8, 16, 32, 64]
-      validation:
-        type: object
-        properties:
-          min:
-            type: number
-          max:
-            type: number
+    - object
+    - extends: [ds_Base]
+      properties:
+        bits:
+          - integer
+          - values: [8, 16, 32, 64]
+        validation:
+          - object
+          - properties:
+              min: [number]
+              max: [number]
 
   ds_Boolean:
-    type: object
-    extends:
-      - ds_Base
-    properties: {}
+    - object
+    - extends: [ds_Base]
+      properties: {}
 
   ds_Map:
-    type: object
-    extends:
-      - ds_Base
-    properties:
-      key:
-        type: ref
-        to: ds_Schema
-      value:
-        type: ref
-        to: ds_Schema
-    required:
-      - key
-      - value
+    - object
+    - extends: [ds_Base]
+      properties:
+        key:
+          - ref
+          - to: ds_Schema
+        value:
+          - ref
+          - to: ds_Schema
+      required: [key, value]
 
   ds_Array:
-    type: object
-    extends:
-      - ds_Base
-    properties:
-      items:
-        type: ref
-        to: ds_Schema
-    required:
-      - items
+    - object
+    - extends: [ds_Base]
+      properties:
+        items:
+          - ref
+          - to: ds_Schema
+      required: [items]
+
+  ds_Tuple:
+    - object
+    - extends: [ds_Base]
+      properties:
+        items:
+          - array
+          - items:
+              - ref
+              - to: ds_Schema
+      required: [items]
 
   ds_Object:
-    type: object
-    extends:
-      - ds_Base
-    properties:
+    - object
+    - extends: [ds_Base]
       properties:
-        type: map
-        key:
-          type: string
-        value:
-          type: ref
-          to: ds_Schema
-      required:
-        type: array
-        items:
-          type: string
-      extends:
-        type: array
-        items:
-          type: string
-    required:
-      - properties
+        properties:
+          - map
+          - key: [string]
+            value:
+              - ref
+              - to: ds_Schema
+        required:
+          - array
+          - items: [string]
+        extends:
+          - array
+          - items: [string]
+      required: [properties]
 
   ds_Enum:
-    type: object
-    properties:
-      of:
-        type: array
-        items:
-          type: string
+    - object
+    - extends: [ds_Base]
+      properties:
+        of:
+          - array
+          - items: [string]
 
   ds_OneOf:
-    type: object
-    properties:
-      these:
-        type: map
-        key:
-          type: string
-        value:
-          type: ref
-          to: ds_Schema
-      tag:
-        type: string
-    required:
-      - these
-
-  ds_OneOfType:
-    type: object
-    properties:
-      these:
-        type: array
-        items:
-          type: ref
-          to: ds_Schema
-    required:
-      - these
+    - object
+    - extends: [ds_Base]
+      properties:
+        these:
+          - map
+          - key: [string]
+            value:
+              - ref
+              - to: ds_Schema
+      required: [these]
 
   ds_Ref:
-    type: object
-    properties:
-      to:
-        type: string
-    required:
-      - to
+    - object
+    - properties:
+        to: [string]
+      required: [to]
