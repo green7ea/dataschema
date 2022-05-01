@@ -8,37 +8,41 @@ function to_map(obj: object) {
   return new Map(_.toPairs(obj));
 }
 
-const a: ds_Schema = {
-  type: "object",
-  properties: to_map({
-    one: {
-      type: "string",
-    },
-    two: {
-      type: "number",
-    },
-  }),
-};
+const a: ds_Schema = [
+  "object",
+  {
+    properties: to_map({
+      one: {
+        type: "string",
+      },
+      two: {
+        type: "number",
+      },
+    }),
+  },
+];
 
-const b: ds_Schema = {
-  type: "object",
-  extends: ["a"],
-  properties: to_map({
-    composition: {
-      type: "ref",
-      to: "a",
-    },
-  }),
-};
+const b: ds_Schema = [
+  "object",
+  {
+    extends: ["a"],
+    properties: to_map({
+      composition: {
+        type: "ref",
+        to: "a",
+      },
+    }),
+  },
+];
 
 const sample_definition: ds_Definition = {
   definitions: to_map({ a, b }),
 };
 
-const flat_b = flatten_object(b, sample_definition);
+const flat_b = flatten_object(b[1], sample_definition);
 
 test("flatten object works with extends", (t) => {
-  a.properties.forEach((value, key) => {
+  a[1].properties.forEach((value, key) => {
     t.true(flat_b.properties.has(key), `flat_b should have ${key}`);
     t.deepEqual(flat_b.properties.get(key), value);
   });
@@ -53,25 +57,27 @@ test("flatten object inlines refs", (t) => {
   t.end();
 });
 
-const one_of: ds_Schema = {
-  type: "oneOf",
-  these: to_map({
-    a: { type: "ref", to: "a" },
-    b: { type: "ref", to: "b" },
-  }),
-};
+const one_of: ds_Schema = [
+  "oneOf",
+  {
+    these: to_map({
+      a: { type: "ref", to: "a" },
+      b: { type: "ref", to: "b" },
+    }),
+  },
+];
 
 test("flatten one ofs", (t) => {
   const flat_one_of = flatten_schema(one_of, sample_definition);
 
-  if (flat_one_of.type !== "oneOf") {
+  if (flat_one_of[0] !== "oneOf") {
     t.fail("didn't return a one of");
     return;
   }
 
-  t.deepEqual(flat_one_of.these.get("a"), a);
+  t.deepEqual(flat_one_of[1].these.get("a"), a);
 
-  t.deepEqual(flat_one_of.these.get("b"), flat_b);
+  t.deepEqual(flat_one_of[1].these.get("b"), flat_b);
 
   t.end();
 });
@@ -120,11 +126,16 @@ test("almost recursive definitions", (t) => {
     return;
   }
 
-  const flat = flatten_schema(obj, almost_recursive) as ds_Object;
-  t.deepEqual(flat.properties.get("one_a"), a);
+  const flat = flatten_schema(obj, almost_recursive);
+  const flat_obj = flat[1] as ds_Object;
 
-  const nest = flat.properties.get("nest") as ds_Object;
-  t.deepEqual(nest?.properties.get("two_a"), a);
+  t.deepEqual(flat_obj.properties.get("one_a"), a);
+
+  const nest = flat_obj.properties.get("nest");
+  const flat_nest =
+    nest && nest[1] ? (nest[1] as ds_Object) : { properties: new Map() };
+
+  t.deepEqual(flat_nest.properties.get("two_a"), a);
 
   t.end();
 });

@@ -6,17 +6,17 @@ export interface ds_Definition {
 }
 
 export type ds_Schema =
-  | ({ type: "string" } & ds_String)
-  | ({ type: "number" } & ds_Number)
-  | ({ type: "integer" } & ds_Integer)
-  | ({ type: "boolean" } & ds_Boolean)
-  | ({ type: "map" } & ds_Map)
-  | ({ type: "array" } & ds_Array)
-  | ({ type: "object" } & ds_Object)
-  | ({ type: "enum" } & ds_Enum)
-  | ({ type: "oneOf" } & ds_OneOf)
-  | ({ type: "oneOfType" } & ds_OneOfType)
-  | ({ type: "ref" } & ds_Ref);
+  | ["string", ds_String]
+  | ["number", ds_Number]
+  | ["integer", ds_Integer]
+  | ["boolean", ds_Boolean]
+  | ["map", ds_Map]
+  | ["array", ds_Array]
+  | ["tuple", ds_Tuple]
+  | ["object", ds_Object]
+  | ["enum", ds_Enum]
+  | ["oneOf", ds_OneOf]
+  | ["ref", ds_Ref];
 
 export interface ds_Base {
   title?: string;
@@ -24,14 +24,14 @@ export interface ds_Base {
   description?: string;
 }
 
-export interface ds_String {
+export interface ds_String extends ds_Base {
   validation?: {
     minLength?: number;
     maxLength?: number;
   };
 }
 
-export interface ds_Number {
+export interface ds_Number extends ds_Base {
   bits?: number;
   validation?: {
     min?: number;
@@ -39,7 +39,7 @@ export interface ds_Number {
   };
 }
 
-export interface ds_Integer {
+export interface ds_Integer extends ds_Base {
   bits?: number;
   validation?: {
     min?: number;
@@ -47,34 +47,34 @@ export interface ds_Integer {
   };
 }
 
-export interface ds_Boolean {}
+export interface ds_Boolean extends ds_Base {}
 
-export interface ds_Map {
+export interface ds_Map extends ds_Base {
   key: ds_Schema;
   value: ds_Schema;
 }
 
-export interface ds_Array {
+export interface ds_Array extends ds_Base {
   items: ds_Schema;
 }
 
-export interface ds_Object {
+export interface ds_Tuple extends ds_Base {
+  items: ds_Schema[];
+}
+
+export interface ds_Object extends ds_Base {
   properties: Map<string, ds_Schema>;
   required?: string[];
   extends?: string[];
 }
 
-export interface ds_Enum {
+export interface ds_Enum extends ds_Base {
   of?: string[];
 }
 
-export interface ds_OneOf {
+export interface ds_OneOf extends ds_Base {
   these: Map<string, ds_Schema>;
   tag?: string;
-}
-
-export interface ds_OneOfType {
-  these: ds_Schema[];
 }
 
 export interface ds_Ref {

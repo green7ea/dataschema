@@ -1,10 +1,6 @@
 import _ from "lodash";
 
-import {
-  ds_Definition,
-  ds_Object,
-  ds_Schema,
-} from "./generated_types";
+import { ds_Definition, ds_Object, ds_Schema } from "./generated_types";
 
 export function flatten_object(
   obj: ds_Object,
@@ -12,8 +8,15 @@ export function flatten_object(
   visited: string[] = []
 ): ds_Object {
   const extended_props = _(obj.extends)
-    .map((extend) => def.definitions?.get(extend))
-    .filter((o) => o?.type === "object")
+    .map((extend) => {
+      const obj = def.definitions?.get(extend);
+      if (!obj) {
+        return undefined;
+      }
+
+      const [typ, value] = obj;
+      return typ === "object" ? (value as ds_Object) : undefined;
+    })
     .filter((x) => !!x)
     .map((o) => flatten_object(o as ds_Object, def))
     .map((o) => o as ds_Object)
@@ -39,7 +42,9 @@ export function flatten_schema(
   def: ds_Definition,
   visited: string[] = []
 ): ds_Schema {
-  switch (schema.type) {
+  const [schema_type, schema_value] = schema;
+
+  switch (schema_type) {
     case "string":
     case "number":
     case "integer":
@@ -47,42 +52,59 @@ export function flatten_schema(
     case "enum":
       return schema;
     case "map":
-      return {
-        ...schema,
-        key: flatten_schema(schema.key, def),
-        value: flatten_schema(schema.value, def),
-      };
+      return [
+        "map",
+        {
+          ...schema_value,
+          key: flatten_schema(schema_value.key, def),
+          value: flatten_schema(schema_value.value, def),
+        },
+      ];
     case "array":
-      return {
-        ...schema,
-        items: flatten_schema(schema.items, def),
-      };
+      return [
+        "array",
+        {
+          ...schema,
+          items: flatten_schema(schema_value.items, def),
+        },
+      ];
+    case "tuple":
+      return [
+        "tuple",
+        {
+          ...schema,
+          items: _.map(schema_value.items, (item) => flatten_schema(item, def)),
+        },
+      ];
     case "object":
-      return {
-        type: "object",
-        ...flatten_object(schema, def),
-      };
+      return [
+        "object",
+        {
+          ...flatten_object(schema_value, def),
+        },
+      ];
     case "oneOf":
-      const options = _(Array.from(schema.these.entries()))
+      const options = _(Array.from(schema_value.these.entries()))
         .map(([name, value]) => [name, flatten_schema(value, def)])
         .value() as [string, ds_Schema][];
 
-      return {
-        ...schema,
-        these: new Map(options),
-      };
-    case "oneOfType":
-      return schema;
+      return [
+        "oneOf",
+        {
+          ...schema_value,
+          these: new Map(options),
+        },
+      ];
     case "ref":
-      if (_.includes(visited, schema.to)) {
+      if (_.includes(visited, schema_value.to)) {
         return schema;
       }
 
-      const ref = def.definitions?.get(schema.to);
+      const ref = def.definitions?.get(schema_value.to);
       if (!ref) {
         throw "uh oh";
       }
 
-      return flatten_schema(ref, def, [...visited, schema.to]);
+      return flatten_schema(ref, def, [...visited, schema_value.to]);
   }
 }
