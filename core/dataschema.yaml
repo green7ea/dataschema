@@ -2,9 +2,7 @@ definitions:
   ds_DefinitionBunch:
     - map
     - key: [string]
-      value:
-        - ref
-        - to: ds_Definition
+      value: [ref, ds_Definition]
 
   ds_Definition:
     - object
@@ -20,46 +18,22 @@ definitions:
         definitions:
           - map
           - key: [string]
-            value:
-              - ref
-              - to: ds_Schema
+            value: [ref, ds_Schema]
 
   ds_Schema:
     - oneOf
     - these:
-        string:
-          - ref
-          - to: ds_String
-        number:
-          - ref
-          - to: ds_Number
-        integer:
-          - ref
-          - to: ds_Integer
-        boolean:
-          - ref
-          - to: ds_Boolean
-        map:
-          - ref
-          - to: ds_Map
-        array:
-          - ref
-          - to: ds_Array
-        tuple:
-          - ref
-          - to: ds_Tuple
-        object:
-          - ref
-          - to: ds_Object
-        enum:
-          - ref
-          - to: ds_Enum
-        oneOf:
-          - ref
-          - to: ds_OneOf
-        ref:
-          - ref
-          - to: ds_Ref
+        string: [ref, ds_String]
+        number: [ref, ds_Number]
+        integer: [ref, ds_Integer]
+        boolean: [ref, ds_Boolean]
+        map: [ref, ds_Map]
+        array: [ref, ds_Array]
+        tuple: [ref, ds_Tuple]
+        object: [ref, ds_Object]
+        enum: [ref, ds_Enum]
+        oneOf: [ref, ds_OneOf]
+        ref: [string]
 
   ds_Base:
     - object
@@ -114,21 +88,15 @@ definitions:
     - object
     - extends: [ds_Base]
       properties:
-        key:
-          - ref
-          - to: ds_Schema
-        value:
-          - ref
-          - to: ds_Schema
+        key: [ref, ds_Schema]
+        value: [ref, ds_Schema]
       required: [key, value]
 
   ds_Array:
     - object
     - extends: [ds_Base]
       properties:
-        items:
-          - ref
-          - to: ds_Schema
+        items: [ref, ds_Schema]
       required: [items]
 
   ds_Tuple:
@@ -137,9 +105,7 @@ definitions:
       properties:
         items:
           - array
-          - items:
-              - ref
-              - to: ds_Schema
+          - items: [ref, ds_Schema]
       required: [items]
 
   ds_Object:
@@ -149,9 +115,7 @@ definitions:
         properties:
           - map
           - key: [string]
-            value:
-              - ref
-              - to: ds_Schema
+            value: [ref, ds_Schema]
         required:
           - array
           - items: [string]
@@ -175,13 +139,5 @@ definitions:
         these:
           - map
           - key: [string]
-            value:
-              - ref
-              - to: ds_Schema
+            value: [ref, ds_Schema]
       required: [these]
-
-  ds_Ref:
-    - object
-    - properties:
-        to: [string]
-      required: [to]

@@ -16,7 +16,7 @@ export type ds_Schema =
   | ["object", ds_Object]
   | ["enum", ds_Enum]
   | ["oneOf", ds_OneOf]
-  | ["ref", ds_Ref];
+  | ["ref", string];
 
 export interface ds_Base {
   title?: string;
@@ -74,9 +74,4 @@ export interface ds_Enum extends ds_Base {
 
 export interface ds_OneOf extends ds_Base {
   these: Map<string, ds_Schema>;
-  tag?: string;
-}
-
-export interface ds_Ref {
-  to: string;
 }

@@ -1,15 +1,6 @@
 import _ from "lodash";
 
-import {
-  ds_Array,
-  ds_Definition,
-  ds_Map,
-  ds_Object,
-  ds_OneOf,
-  ds_Ref,
-  ds_Schema,
-  ds_Tuple,
-} from "./generated_types";
+import { ds_Definition, ds_Schema } from "./generated_types";
 
 export function ds_file_to_typescript(def: ds_Definition): string {
   const imports = imports_to_typescript(def.imports);
@@ -123,7 +114,7 @@ function schema_to_typescript(schema: ds_Schema): string {
         .join("\n");
     }
     case "ref":
-      return schema_value.to;
+      return schema_value;
     default:
       return `// Unknown type '${schema_type}'`;
   }
