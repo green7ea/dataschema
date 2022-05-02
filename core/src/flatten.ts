@@ -96,15 +96,15 @@ export function flatten_schema(
         },
       ];
     case "ref":
-      if (_.includes(visited, schema_value.to)) {
+      if (_.includes(visited, schema_value)) {
         return schema;
       }
 
-      const ref = def.definitions?.get(schema_value.to);
+      const ref = def.definitions?.get(schema_value);
       if (!ref) {
         throw "uh oh";
       }
 
-      return flatten_schema(ref, def, [...visited, schema_value.to]);
+      return flatten_schema(ref, def, [...visited, schema_value]);
   }
 }
