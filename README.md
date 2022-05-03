@@ -14,71 +14,64 @@ The answer is DataSchema.
 
 ```yaml
 imports:
-
-  person.yaml:
-    - Person
-
+  person.yaml: [Person]
 
 definitions:
 
   RealPlace:
-    type: object
-    properties:
-      building:
-        type: string
-      room:
-        type: string
+    - object
+    - properties:
+        building: [string]
+        room: [string]
+      required: [building, room]
 
   VirtualPlace:
-    type: string
+    - object
+    - properties:
+        url: [string]
+      required: [url]
 
   Contact:
-    type: object
-    extends:
-      - Person
-    properties:
-      email:
-        type: string
+    - object
+    - extends: [Person]
+      properties:
+        email: [string]
+      required: [email]
 
   Meeting:
-    type: object
-    properties:
-      place:
-        type: oneOf
-        these:
-          real:
-            type: ref
-            to: RealPlace
-          virtual:
-            type: ref
-            to: VirtualPlace
-      participants:
-        type: array
-        items:
-          type: ref
-          to: Contact
+    - object
+    - properties:
+        place:
+          - oneOf
+          - these:
+              real: [ref, RealPlace]
+              virtual: [ref, VirtualPlace]
+        participants:
+          - array
+          - items: [ref, Contact]
+      required: [place, participants]
 ```
 
 can generate the following Typescript:
 
 ```typescript
-// TODO import
-import { Person } from './person';
+import Person from "person.yaml";
 
 export interface RealPlace {
   building: string;
   room: string;
 }
 
-export type VirtualPlace = string;
+export interface VirtualPlace {
+  url: string;
+}
 
-// TODO extends
 export interface Contact extends Person {
   email: string;
 }
 
 export interface Meeting {
-  place: ({ type: "real" } & RealPlace) | ({ type: "virtual" } & VirtualPlace);
+  place: ["real", RealPlace] | ["virtual", VirtualPlace];
   participants: Contact[];
 }
 ```
