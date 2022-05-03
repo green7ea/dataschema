@@ -27,7 +27,10 @@ definitions:
     - properties:
         place:
           - oneOf
-            - real: [ref, RealPlace]
-            - virtual: [ref, VirtualPlace]
-        participants: [array, [ref, Contact]]
+          - these:
+              real: [ref, RealPlace]
+              virtual: [ref, VirtualPlace]
+        participants:
+          - array
+          - items: [ref, Contact]
       required: [place, participants]
