@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { ds_file_to_typescript } from "./generate";
+import { ds_file_to_typescript } from "./generate_ts";
 import { format } from "prettier";
 import { read_def_from_file } from "./reader";
 import { promises as fs } from "fs";
